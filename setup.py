@@ -17,6 +17,22 @@ install_requires = [
     'six',
 ]
 
+import six
+
+entry_points = """
+# -*- Entry points: -*-
+[plone.autoinclude.plugin]
+target = plone
+"""
+
+if six.PY2:
+    entry_points = """
+# -*- Entry points: -*-
+[z3c.autoinclude.plugin]
+target = plone
+"""
+
+
 setup(
     name='wcs.adminauth',
     version=version,

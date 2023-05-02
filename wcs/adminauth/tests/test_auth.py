@@ -6,13 +6,17 @@ from wcs.adminauth.tests import FunctionalTestCase
 from wcs.adminauth.tests.utils import get_data
 from zope.component import getMultiAdapter
 import responses
+import unittest
+import six
+
 
 class TestAuthView(FunctionalTestCase):
 
     def get_auth_view(self):
         return getMultiAdapter((self.portal, self.request), name=u'zauth')
 
-    def test_redirect_to_cas_login_url(self):
+    @unittest.skipUnless(six.PY3, 'only run with python 3 and plone 6')
+    def test_redirect_to_cas_login_url_plone6(self):
         browser = Browser(self.portal)
         browser.followRedirects = False
         browser.open(self.portal.absolute_url() + '/zauth')
@@ -22,6 +26,19 @@ class TestAuthView(FunctionalTestCase):
                     self.portal.absolute_url() + '/zauth')
         self.assertEqual(location,
                          browser.headers['Location'])
+
+    @unittest.skipUnless(six.PY2, 'only run with python 2 and plone < 5.1.x')
+    def test_redirect_to_cas_login_url(self):
+        from urllib2 import HTTPError
+        browser = Browser(self.portal)
+        browser.mech_browser.set_handle_redirect(False)
+        with self.assertRaises(HTTPError) as cm:
+            browser.open(self.portal.absolute_url() + '/zauth')
+        self.assertEqual(302, cm.exception.getcode())
+        location = (config['cas_server_url'] + '/login?service=' +
+                    self.portal.absolute_url() + '/zauth')
+        self.assertEqual(location,
+                         cm.exception.hdrs['location'])
 
     def test_find_userfolder_for_not_existing_user(self):
         self.assertEqual(None, self.get_auth_view().find_userfolder('god'))
