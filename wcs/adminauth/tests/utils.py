@@ -11,4 +11,5 @@ def b64encode(source):
 def get_data(filename):
     """Return content from a file in the test data folder """
     filename = os.path.join(os.path.dirname(__file__), 'data', filename)
-    return open(filename, 'r').read()
+    with open(filename, 'r') as file_:
+        return file_.read()
