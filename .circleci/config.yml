@@ -1,0 +1,35 @@
+version: 2.1
+
+
+workflows:
+  tests:
+    jobs:
+      - plone5py27
+      - plone6py311
+
+jobs:
+  plone5py27:
+    resource_class: medium
+    docker:
+      - image: webcloud7/plone-test:5.1.7.4
+        user: plone
+    working_directory: /project
+    steps:
+      - checkout
+      - run: virtualenv .
+      - run: ./bin/pip install setuptools==44.1.1 zc.buildout==2.13.8
+      - run: ./bin/buildout -c test-plone-5.1.x.cfg
+      - run: ./bin/test
+
+
+  plone6py311:
+    resource_class: medium
+    docker:
+      - image: webcloud7/plone-test:6.0.3-py311
+    environment:
+      PIP_FIND_LINKS: /wheelhouse/
+      zope_i18n_compile_mo_files: "true"
+    steps:
+      - checkout
+      - run: ./boostrap.sh test-plone-6.0.3.cfg
+      - run: ./bin/test
