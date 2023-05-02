@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
+
 version = '1.0.0.dev0'
 
 tests_require = [
@@ -16,22 +17,6 @@ install_requires = [
     'lxml',
     'six',
 ]
-
-import six
-
-entry_points = """
-# -*- Entry points: -*-
-[plone.autoinclude.plugin]
-target = plone
-"""
-
-if six.PY2:
-    entry_points = """
-# -*- Entry points: -*-
-[z3c.autoinclude.plugin]
-target = plone
-"""
-
 
 setup(
     name='wcs.adminauth',
@@ -62,9 +47,4 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     extras_require=dict(tests=tests_require),
-    entry_points="""
-    # -*- Entry points: -*-
-    [plone.autoinclude.plugin]
-    target = plone
-    """,
 )

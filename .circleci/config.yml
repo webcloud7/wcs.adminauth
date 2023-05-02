@@ -31,5 +31,5 @@ jobs:
       zope_i18n_compile_mo_files: "true"
     steps:
       - checkout
-      - run: ./boostrap.sh test-plone-6.0.3.cfg
+      - run: ./bootstrap.sh test-plone-6.0.3.cfg
       - run: ./bin/test
