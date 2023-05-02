@@ -1,0 +1,13 @@
+*.egg-info
+*.pyc
+*.pyo
+*.mo
+.installed.cfg
+.mr.developer.cfg
+buildout.cfg
+bin/
+develop-eggs/
+dist/
+eggs/
+parts/
+source/
