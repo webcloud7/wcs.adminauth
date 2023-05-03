@@ -13,6 +13,7 @@ from wcs.adminauth.configuration import get_config
 from wcs.adminauth.session import SessionPlugin
 import pkg_resources
 import string
+import os
 
 
 SESSION_PLUGIN_METATYPES = [
@@ -35,6 +36,7 @@ class AuthenticationView(BrowserView):
             service_url=self.service_url(),
             server_url=config['cas_server_url'],
         )
+        self.adminuser = os.environ.get('ADMINUSER', 'zopemaster')
 
     def __call__(self):
         if 'ticket' in self.request.form:
@@ -42,7 +44,7 @@ class AuthenticationView(BrowserView):
             if not cas_userid:
                 raise Unauthorized("Authentication failed.")
 
-            userid = self.request.form.get('userid', 'adminuser')
+            userid = self.request.form.get('userid', self.adminuser)
             uf = self.find_userfolder(userid)
             if not uf:
                 logger.info("Authentication failed: User '%s' not found." %
@@ -56,7 +58,7 @@ class AuthenticationView(BrowserView):
 
             self.request.response.redirect(self.context.absolute_url())
         else:
-            self.request.response.redirect('%s/login?service=%s' % (
+            self.request.response.redirect('%slogin?service=%s' % (
                 config['cas_server_url'],
                 self.service_url()
             ))
@@ -89,7 +91,6 @@ class AuthenticationView(BrowserView):
         """Return a PAS userfolder for the given context and make sure it has
            a session plugin."""
         uf = getToolByName(context, 'acl_users')
-
         # Migrate to PluggableAuthService if needed
         if not IPluggableAuthService.providedBy(uf):
             if PLONE_PAS_VERSION.startswith('4'):
@@ -125,11 +126,16 @@ class AuthenticationView(BrowserView):
             # Set random adminuser password
             # We no longer want to login using a password.
             user_manager = uf.get('users', None)
-            if user_manager and 'adminuser' in user_manager._user_passwords:
+
+            random = SystemRandom()
+            chars = string.ascii_letters + string.digits
+            pw = ''.join(random.choice(chars) for i in range(32))
+
+            if user_manager and self.adminuser in user_manager._user_passwords:
                 random = SystemRandom()
                 chars = string.ascii_letters + string.digits
                 pw = ''.join(random.choice(chars) for i in range(32))
-                user_manager.updateUserPassword('adminuser', pw)
+                user_manager.updateUserPassword(self.adminuser, pw)
 
         return uf
 
