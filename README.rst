@@ -34,11 +34,11 @@ restart your instance.
 Usage
 =====
 
-Open the ``@@zauth`` view in your browser and you will get authenticated as
+Open the ``@@adminauth`` view in your browser and you will get authenticated as
 the ``adminuser`` user.
 
 You can specify a different userid by providing it as an url parameter:
-e.g. ``@@zauth?userid=john``.
+e.g. ``@@adminauth?userid=john``.
 
 
 Options

@@ -7,7 +7,7 @@
   <five:registerPackage package="." initialize=".initialize" />
 
   <browser:page
-      name="zauth"
+      name="adminauth"
       for="*"
       class=".auth.AuthenticationView"
       permission="zope2.Public"

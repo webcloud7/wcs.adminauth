@@ -13,17 +13,17 @@ import six
 class TestAuthView(FunctionalTestCase):
 
     def get_auth_view(self):
-        return getMultiAdapter((self.portal, self.request), name=u'zauth')
+        return getMultiAdapter((self.portal, self.request), name=u'adminauth')
 
     @unittest.skipUnless(six.PY3, 'only run with python 3 and plone 6')
     def test_redirect_to_cas_login_url_plone6(self):
         browser = Browser(self.portal)
         browser.followRedirects = False
-        browser.open(self.portal.absolute_url() + '/zauth')
+        browser.open(self.portal.absolute_url() + '/adminauth')
         browser.headers['Location']
         self.assertEqual('302 Found', browser.headers['Status'])
         location = (config['cas_server_url'] + '/login?service=' +
-                    self.portal.absolute_url() + '/zauth')
+                    self.portal.absolute_url() + '/adminauth')
         self.assertEqual(location,
                          browser.headers['Location'])
 
@@ -33,10 +33,10 @@ class TestAuthView(FunctionalTestCase):
         browser = Browser(self.portal)
         browser.mech_browser.set_handle_redirect(False)
         with self.assertRaises(HTTPError) as cm:
-            browser.open(self.portal.absolute_url() + '/zauth')
+            browser.open(self.portal.absolute_url() + '/adminauth')
         self.assertEqual(302, cm.exception.getcode())
         location = (config['cas_server_url'] + '/login?service=' +
-                    self.portal.absolute_url() + '/zauth')
+                    self.portal.absolute_url() + '/adminauth')
         self.assertEqual(location,
                          cm.exception.hdrs['location'])
 
@@ -66,13 +66,13 @@ class TestAuthView(FunctionalTestCase):
         self.assertFalse(AuthEncoding.pw_validate(stored_pw, 'secret'))
 
     def test_service_url(self):
-        view_url = self.portal.absolute_url() + '/zauth'
+        view_url = self.portal.absolute_url() + '/adminauth'
         self.request.URL = view_url
         self.assertEqual(view_url,
                          self.get_auth_view().service_url())
 
     def test_service_url_with_userid(self):
-        view_url = self.portal.absolute_url() + '/zauth'
+        view_url = self.portal.absolute_url() + '/adminauth'
         self.request.URL = view_url
         self.request.form.update({'userid': 'james'})
         self.assertEqual(view_url + '%3Fuserid%3Djames',
