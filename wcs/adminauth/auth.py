@@ -114,9 +114,9 @@ class AuthenticationView(BrowserView):
                 have_session_plugin = True
         if not have_session_plugin:
             # Install our session plugin
-            plugin = SessionPlugin('session_auth')
+            plugin = SessionPlugin('session_adminauth')
             uf._setObject(plugin.getId(), plugin)
-            plugin = uf['session_auth']
+            plugin = uf['session_adminauth']
             plugin.manage_activateInterfaces([
                 'IAuthenticationPlugin',
                 'ICredentialsResetPlugin',

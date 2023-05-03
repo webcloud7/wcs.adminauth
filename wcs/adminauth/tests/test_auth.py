@@ -53,7 +53,7 @@ class TestAuthView(FunctionalTestCase):
                          self.get_auth_view().find_userfolder(SITE_OWNER_NAME))
 
     def test_installation_of_session_plugin_in_root_userfolder(self):
-        self.assertIn('session_auth',
+        self.assertIn('session_adminauth',
                       self.get_auth_view().pas_userfolder(self.layer['app']))
 
     def test_initial_admimuser_password_is_not_working(self):

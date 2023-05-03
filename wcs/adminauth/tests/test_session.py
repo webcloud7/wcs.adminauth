@@ -14,9 +14,9 @@ class TestSessionPlugin(FunctionalTestCase):
         super(TestSessionPlugin, self).setUp()
 
         uf = self.portal.acl_users
-        plugin = SessionPlugin('session_auth')
+        plugin = SessionPlugin('session_adminauth')
         uf._setObject(plugin.getId(), plugin)
-        plugin = uf['session_auth']
+        plugin = uf['session_adminauth']
         plugin.manage_activateInterfaces([
             'IAuthenticationPlugin',
             'ICredentialsResetPlugin',
