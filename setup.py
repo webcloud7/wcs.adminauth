@@ -47,4 +47,11 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     extras_require=dict(tests=tests_require),
+    entry_points="""
+    # -*- Entry points: -*-
+    [z3c.autoinclude.plugin]
+    target = plone
+    [plone.autoinclude.plugin]
+    target = plone
+    """,
 )
