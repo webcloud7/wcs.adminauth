@@ -1,7 +1,6 @@
 from AccessControl import AuthEncoding
 from plone.app.testing import TEST_USER_NAME, SITE_OWNER_NAME
 from plone.testing.z2 import Browser
-from wcs.adminauth.auth import config
 from wcs.adminauth.tests import FunctionalTestCase
 from wcs.adminauth.tests.utils import get_data
 from zope.component import getMultiAdapter
@@ -23,7 +22,7 @@ class TestAuthView(FunctionalTestCase):
         browser.open(self.portal.absolute_url() + '/adminauth')
         browser.headers['Location']
         self.assertEqual('302 Found', browser.headers['Status'])
-        location = (config['cas_server_url'] + 'login?service=' +
+        location = (os.environ.get('ADMIN_AUTH_CAS_SERVER_URL', None) + 'login?service=' +
                     self.portal.absolute_url() + '/adminauth')
         self.assertEqual(location,
                          browser.headers['Location'])
@@ -36,7 +35,7 @@ class TestAuthView(FunctionalTestCase):
         with self.assertRaises(HTTPError) as cm:
             browser.open(self.portal.absolute_url() + '/adminauth')
         self.assertEqual(302, cm.exception.getcode())
-        location = (config['cas_server_url'] + 'login?service=' +
+        location = (os.environ.get('ADMIN_AUTH_CAS_SERVER_URL', None) + 'login?service=' +
                     self.portal.absolute_url() + '/adminauth')
         self.assertEqual(location,
                          cm.exception.hdrs['location'])
@@ -59,11 +58,11 @@ class TestAuthView(FunctionalTestCase):
     def test_initial_admimuser_password_is_not_working(self):
         uf = self.layer['app']['acl_users']
         user_manager = uf['users']
-        user_manager.addUser('zopemaster', 'zopemaster', 'secret')
-        stored_pw = user_manager._user_passwords.get('zopemaster')
+        user_manager.addUser('adminuser', 'adminuser', 'secret')
+        stored_pw = user_manager._user_passwords.get('adminuser')
         self.assertTrue(AuthEncoding.pw_validate(stored_pw, 'secret'))
         self.get_auth_view().pas_userfolder(self.layer['app'])
-        stored_pw = user_manager._user_passwords.get('zopemaster')
+        stored_pw = user_manager._user_passwords.get('adminuser')
         self.assertFalse(AuthEncoding.pw_validate(stored_pw, 'secret'))
 
     def test_service_url(self):
@@ -83,14 +82,15 @@ class TestAuthView(FunctionalTestCase):
         uf = self.layer['app']['acl_users']
         user_manager = uf['users']
         user_manager.addUser('hans', 'hans', 'secret')
-        os.environ['ADMINUSER'] = 'hans'
+        original = os.environ['ADMIN_AUTH_USERID']
+        os.environ['ADMIN_AUTH_USERID'] = 'hans'
         
         try:
             self.get_auth_view().pas_userfolder(self.layer['app'])
             stored_pw = user_manager._user_passwords.get('hans')
             self.assertFalse(AuthEncoding.pw_validate(stored_pw, 'secret'))
         finally:
-            del os.environ['ADMINUSER']
+            os.environ['ADMIN_AUTH_USERID'] = original
 
     @responses.activate
     def test_validate_ticket_success(self):

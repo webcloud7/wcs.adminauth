@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.0 (2014-12-23)
-------------------
+1.0.0.dev0 (unreleased)
+-----------------------
 
 - Initial release based on ftw.zopemaster 1.4.x and python-cas 1.6.0

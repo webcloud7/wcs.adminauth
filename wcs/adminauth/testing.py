@@ -14,7 +14,8 @@ class AdminauthLayer(PloneSandboxLayer):
         super(AdminauthLayer, self).setUpZope(app, configurationContext)
         self.loadZCML(package=wcs.adminauth)
         z2.installProduct(app, 'wcs.adminauth')
-        os.environ['ADMINUSER'] = 'adminuser'
+        os.environ['ADMIN_AUTH_USERID'] = 'adminuser'
+        os.environ['ADMIN_AUTH_CAS_SERVER_URL'] = 'https://cas.example-server.org/'
 
 
 WCS_ADMINAUTH_FIXTURE = AdminauthLayer()

@@ -12,6 +12,14 @@ This is helpful when running a lot of Plone sites and having multiple people
 that need administrative access as there's no need to share and manage
 administrative passwords.
 
+
+Compatibility
+=============
+
+This package is officially tested with plone 5.1.x and plone 6.
+Plone 4.3 should work as well, but is not tested and will not be maintained.
+
+
 Session authentication plugin
 -----------------------------
 
@@ -20,14 +28,14 @@ user folder (acl_users) if needed as the root user folder does not provide any
 session-based authentication on default installations. The plugin is based on
 ``plone.session``.
 
-After installation of the session plugin the password of the user adminuser
+After installation of the session plugin the password of the user defined in ADMIN_AUTH_USERID
 is reset to a random value to disable password-based login.
 
 
 Installation
 ============
 
-Add ``wcs.adminuser`` to the list of eggs in your buildout, run buildout and
+Add ``wcs.adminauth`` to the list of eggs in your buildout, run buildout and
 restart your instance.
 
 
@@ -41,28 +49,28 @@ You can specify a different userid by providing it as an url parameter:
 e.g. ``@@adminauth?userid=john``.
 
 
-Options
-=======
+CAS Server URL
+==============
 
-Configuration options can be provided via the ``zope-conf-additional`` section.
+The CAS Server URL options has to be provided via environment variables.
 
 Example::
 
-    zope-conf-additional =
-       <product-config wcs.adminuser>
-           cas_server_url https://cas.example.com/
-       </product-config>
+    ADMIN_AUTH_CAS_SERVER_URL=https://cas.example.com/
 
+Admin users id
+==============
 
-Currently the following options are supported:
+You need to define what user the plugin should use as central admin user (default is admin).
 
-cas_server_url
-  The URL of the central authentication server (CAS). Defaults to https://auth.4teamwork.ch
+Example::
 
+    ADMIN_AUTH_USERID=admin
 
 Copyright
 =========
 
-This package is copyright by `webcloud7 <http://www.webcloud7.ch/>`_.
+The package is based on ftw.zopemaster (GNU General Public License, version 2)
 
-``wcs.adminuser`` is licensed under GNU General Public License, version 2.
+
+``wcs.adminauth`` is licensed under GNU General Public License, version 2.

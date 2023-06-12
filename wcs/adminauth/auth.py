@@ -9,7 +9,6 @@ from Products.PluggableAuthService.interfaces.authservice import IPluggableAuthS
 from Products.PluggableAuthService.interfaces.plugins import ICredentialsUpdatePlugin
 from random import SystemRandom
 from six.moves.urllib.parse import quote
-from wcs.adminauth.configuration import get_config
 from wcs.adminauth.session import SessionPlugin
 import pkg_resources
 import string
@@ -22,7 +21,6 @@ SESSION_PLUGIN_METATYPES = [
 ]
 
 logger = getLogger('wcs.adminauth')
-config = get_config()
 
 PLONE_PAS_VERSION = pkg_resources.get_distribution("Products.PlonePAS").version
 
@@ -31,12 +29,13 @@ class AuthenticationView(BrowserView):
 
     def __init__(self, browser, request):
         super(AuthenticationView, self).__init__(browser, request)
+        self.cas_server_url = os.environ.get('ADMIN_AUTH_CAS_SERVER_URL', None)
         self.cas_client = CASClient(
             version=3,
             service_url=self.service_url(),
-            server_url=config['cas_server_url'],
+            server_url=self.cas_server_url
         )
-        self.adminuser = os.environ.get('ADMINUSER', 'zopemaster')
+        self.adminuser = os.environ.get('ADMIN_AUTH_USERID', 'admin')
 
     def __call__(self):
         if 'ticket' in self.request.form:
@@ -59,7 +58,7 @@ class AuthenticationView(BrowserView):
             self.request.response.redirect(self.context.absolute_url())
         else:
             self.request.response.redirect('%slogin?service=%s' % (
-                config['cas_server_url'],
+                self.cas_server_url,
                 self.service_url()
             ))
 
