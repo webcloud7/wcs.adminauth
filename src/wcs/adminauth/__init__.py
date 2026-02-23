@@ -1,4 +1,4 @@
-__version__ = "1.0.2.dev0"
+__version__ = "2.0.0"
 
 from AccessControl.Permissions import add_user_folders
 from Products.PluggableAuthService.PluggableAuthService import registerMultiPlugin
