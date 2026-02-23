@@ -1,27 +1,28 @@
-from plone.app.testing import TEST_USER_ID, TEST_USER_NAME
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
 from plone.session import tktauth
 from wcs.adminauth.session import SessionPlugin
 from wcs.adminauth.tests import FunctionalTestCase
 from wcs.adminauth.tests.utils import b64encode
 from zope.publisher.browser import TestRequest
+
 import binascii
 
 
 class TestSessionPlugin(FunctionalTestCase):
-
     def setUp(self):
         # Setup PAS plugin
-        super(TestSessionPlugin, self).setUp()
+        super().setUp()
 
         uf = self.portal.acl_users
-        plugin = SessionPlugin('session_adminauth')
+        plugin = SessionPlugin("session_adminauth")
         uf._setObject(plugin.getId(), plugin)
-        plugin = uf['session_adminauth']
+        plugin = uf["session_adminauth"]
         plugin.manage_activateInterfaces([
-            'IAuthenticationPlugin',
-            'ICredentialsResetPlugin',
-            'ICredentialsUpdatePlugin',
-            'IExtractionPlugin',
+            "IAuthenticationPlugin",
+            "ICredentialsResetPlugin",
+            "ICredentialsUpdatePlugin",
+            "IExtractionPlugin",
         ])
         self.plugin = plugin
 
@@ -30,7 +31,7 @@ class TestSessionPlugin(FunctionalTestCase):
         self.assertEqual({}, self.plugin.extractCredentials(req))
 
     def test_extract_credentials_from_cookie(self):
-        cookie = b64encode('test ticket')
+        cookie = b64encode("test ticket")
         req = TestRequest(**{self.plugin.cookie_name: cookie})
         creds = self.plugin.extractCredentials(req)
         self.assertEqual(b"test ticket", creds["cookie"])
@@ -41,7 +42,7 @@ class TestSessionPlugin(FunctionalTestCase):
         self.assertEqual({}, self.plugin.extractCredentials(req))
 
     def test_authenticate_credentials_of_wrong_extractor(self):
-        creds = {'cookie': 'test ticket', 'extractor': 'wrong'}
+        creds = {"cookie": "test ticket", "extractor": "wrong"}
         self.assertEqual(None, self.plugin.authenticateCredentials(creds))
 
     def test_authenticate_credentials(self):
@@ -49,15 +50,17 @@ class TestSessionPlugin(FunctionalTestCase):
             secret=self.plugin._getSigningSecrets()[0],
             userid=TEST_USER_ID,
         )
-        creds = {'cookie': ticket, 'extractor': self.plugin.getId()}
-        self.assertEqual((TEST_USER_ID, TEST_USER_NAME),
-                         self.plugin.authenticateCredentials(creds))
+        creds = {"cookie": ticket, "extractor": self.plugin.getId()}
+        self.assertEqual(
+            (TEST_USER_ID, TEST_USER_NAME), self.plugin.authenticateCredentials(creds)
+        )
 
     def test_update_credentials(self):
         req = TestRequest()
-        self.plugin.updateCredentials(req, req.response, TEST_USER_NAME, '')
-        ticket = binascii.a2b_base64(req.response.getCookie(
-            self.plugin.cookie_name)['value'])
+        self.plugin.updateCredentials(req, req.response, TEST_USER_NAME, "")
+        ticket = binascii.a2b_base64(
+            req.response.getCookie(self.plugin.cookie_name)["value"]
+        )
         ticket_data = self.plugin._validateTicket(ticket)
         self.assertEqual(ticket_data[1], TEST_USER_NAME)
 
@@ -69,14 +72,15 @@ class TestSessionPlugin(FunctionalTestCase):
 
     def test_signing_secret_changes(self):
         secret = self.plugin._getSigningSecrets()[0]
-        self.plugin._secret_ts -= (self.plugin._secret_max_age + 1)
+        self.plugin._secret_ts -= self.plugin._secret_max_age + 1
         self.assertEqual(2, len(self.plugin._getSigningSecrets()))
         self.assertNotEqual(secret, self.plugin._getSigningSecrets()[0])
         self.assertEqual(secret, self.plugin._getSigningSecrets()[1])
 
     def test_signing_secret_max_keep(self):
-        for i in range(0, self.plugin._secrets_keep):
+        for _i in range(0, self.plugin._secrets_keep):
             self.plugin._getSigningSecrets()[0]
-            self.plugin._secret_ts -= (self.plugin._secret_max_age + 1)
-        self.assertEqual(self.plugin._secrets_keep,
-                         len(self.plugin._getSigningSecrets()))
+            self.plugin._secret_ts -= self.plugin._secret_max_age + 1
+        self.assertEqual(
+            self.plugin._secrets_keep, len(self.plugin._getSigningSecrets())
+        )
