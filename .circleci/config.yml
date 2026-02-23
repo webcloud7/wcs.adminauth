@@ -12,7 +12,7 @@ jobs:
   plone61py312:
     resource_class: medium
     docker:
-      - image: webcloud7/plone-test:6.1.1-py312
+      - image: webcloud7/plone-test:6.1.2-py312
 
     environment:
       PIP_FIND_LINKS: /wheelhouse/
@@ -29,7 +29,7 @@ jobs:
   plone61py313:
     resource_class: medium
     docker:
-      - image: webcloud7/plone-test:6.1.1-py313
+      - image: webcloud7/plone-test:6.1.2-py313
 
     environment:
       PIP_FIND_LINKS: /wheelhouse/
