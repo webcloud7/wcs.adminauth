@@ -4,32 +4,41 @@ version: 2.1
 workflows:
   tests:
     jobs:
-      - plone5py27
-      - plone6py311
+      - plone61py312
+      - plone61py313
 
 jobs:
-  plone5py27:
+
+  plone61py312:
     resource_class: medium
     docker:
-      - image: webcloud7/plone-test:5.1.7.4
-        user: plone
-    working_directory: /project
-    steps:
-      - checkout
-      - run: virtualenv .
-      - run: ./bin/pip install setuptools==44.1.1 zc.buildout==2.13.8
-      - run: ./bin/buildout -c test-plone-5.1.x.cfg
-      - run: ./bin/test
+      - image: webcloud7/plone-test:6.1.2-py312
 
-
-  plone6py311:
-    resource_class: medium
-    docker:
-      - image: webcloud7/plone-test:6.0.3-py311
     environment:
       PIP_FIND_LINKS: /wheelhouse/
       zope_i18n_compile_mo_files: "true"
+      WSGI_SERVER_PORT: 65035
+
     steps:
       - checkout
-      - run: ./bootstrap.sh test-plone-6.0.3.cfg
-      - run: ./bin/test
+      - run: pip install uv
+      - run: make install
+      - run: make lint
+      - run: make test
+
+  plone61py313:
+    resource_class: medium
+    docker:
+      - image: webcloud7/plone-test:6.1.2-py313
+
+    environment:
+      PIP_FIND_LINKS: /wheelhouse/
+      zope_i18n_compile_mo_files: "true"
+      WSGI_SERVER_PORT: 65035
+
+    steps:
+      - checkout
+      - run: pip install uv
+      - run: make install
+      - run: make lint
+      - run: make test

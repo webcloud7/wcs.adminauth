@@ -16,8 +16,8 @@ administrative passwords.
 Compatibility
 =============
 
-This package is officially tested with plone 5.1.x and plone 6.
-Plone 4.3 should work as well, but is not tested and will not be maintained.
+- Plone 6.1
+- Python 3.12, 3.13
 
 
 Session authentication plugin
@@ -35,8 +35,9 @@ is reset to a random value to disable password-based login.
 Installation
 ============
 
-Add ``wcs.adminauth`` to the list of eggs in your buildout, run buildout and
-restart your instance.
+Add ``wcs.adminauth`` to your package dependencies or install it with pip::
+
+    pip install wcs.adminauth
 
 
 Usage
